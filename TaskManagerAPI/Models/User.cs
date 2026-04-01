@@ -1,0 +1,19 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TaskManagerAPI.Models
+{
+    public class User
+    {
+        public int Id { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        [MinLength(6)]
+        public string Password { get; set; } = string.Empty;
+
+        public List<TaskItem>? Tasks { get; set; }
+    }
+}
