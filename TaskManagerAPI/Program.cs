@@ -5,6 +5,7 @@ using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using TaskManagerAPI.Data;
+using TaskManagerAPI.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -47,7 +48,8 @@ builder.Services.AddSwaggerGen(options =>
 
 
 //AUTHENTICATION
-var key = "EstaEsUnaClaveSuperSecretaMUY_LARGA_123456789";
+var key = builder.Configuration["Jwt:Key"];
+
 
 builder.Services.AddAuthentication(options =>
 {
@@ -79,7 +81,8 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
-
+builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<IUserService, UserService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -94,8 +97,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 
