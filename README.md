@@ -1,187 +1,151 @@
-# 🧠 Task Manager API - .NET
+# TaskManagerAPI
 
-API REST desarrollada en **.NET** para la gestión de usuarios y tareas, con autenticación segura mediante **JWT**. Permite registrar usuarios, iniciar sesión y administrar tareas de forma protegida.
-
----
-
-## 🚀 Características
-
-* 🔐 Autenticación con JWT
-* 🔒 Hash de contraseñas con BCrypt
-* 👤 Registro y login de usuarios
-* 📋 CRUD completo de tareas
-* 🛡 Protección de endpoints con `[Authorize]`
-* ✅ Validaciones de datos
-* 🧼 Uso de DTOs (entrada/salida limpia)
-* 🗄️ Persistencia con Entity Framework + SQL Server
+REST API desarrollada en ASP.NET Core para la gestión de tareas por usuario, con autenticación JWT y arquitectura en capas.
 
 ---
 
-## 🛠️ Tecnologías utilizadas
+## Tecnologías utilizadas
 
-* .NET
-* Entity Framework Core
-* SQL Server
-* JWT (JSON Web Tokens)
-* BCrypt.Net
-
----
-
-## 📦 Estructura del proyecto
-
-```
-Controllers/
-├── UserController.cs
-├── TaskController.cs
-
-Models/
-├── User.cs
-├── TaskItem.cs
-
-DTOs/
-├── TaskDTO.cs
-├── TaskResponseDTO.cs
-├── UserDTO.cs
-
-Data/
-├── AppDbContext.cs
-```
+- ASP.NET Core 8
+- Entity Framework Core
+- SQL Server Express
+- JWT (JSON Web Tokens)
+- BCrypt.Net (hash de contraseñas)
+- Swagger / OpenAPI
 
 ---
 
-## ⚙️ Configuración
+## Arquitectura
 
-### 🔧 1. Clonar repositorio
+El proyecto sigue el patrón de separación de responsabilidades:
 
+- **Controllers** → Reciben peticiones HTTP y devuelven respuestas
+- **Services** → Contienen toda la lógica de negocio
+- **Models** → Representan las entidades de la base de datos
+- **DTOs** → Controlan los datos que entran y salen de la API
+- **Data** → Contexto de Entity Framework
+
+---
+
+## Estructura del proyecto
+
+TaskManagerAPI/
+├── Controllers/
+│   ├── TasksController.cs
+│   └── UsersController.cs
+├── Services/
+│   ├── ITaskService.cs
+│   ├── TaskService.cs
+│   ├── IUserService.cs
+│   └── UserService.cs
+├── Models/
+│   ├── TaskItem.cs
+│   └── User.cs
+├── DTOs/
+│   ├── TaskDTO.cs
+│   ├── TaskResponseDTO.cs
+│   └── UserDTO.cs
+├── Data/
+│   └── AppDbContext.cs
+├── Migrations/
+├── appsettings.json
+└── Program.cs
+
+---
+
+## Requisitos previos
+
+- .NET 8 SDK
+- SQL Server Express
+- Visual Studio 2022 o VS Code
+
+---
+
+## Configuración
+
+1. Clona el repositorio:
 ```bash
-git clone https://github.com/TU_USUARIO/TU_REPO.git
-cd TU_REPO
+git clone https://github.com/TU_USUARIO/TaskManagerAPI.git
+cd TaskManagerAPI
 ```
 
----
-
-### 🔧 2. Configurar conexión a base de datos
-
-Editar `appsettings.json`:
-
+2. Configura la cadena de conexión en `appsettings.json`:
 ```json
-"ConnectionStrings": {
-  "DefaultConnection": "Server=localhost\\SQLEXPRESS;Database=TaskDb;Trusted_Connection=True;"
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost\\SQLEXPRESS;Database=TaskManagerDB;Trusted_Connection=True;TrustServerCertificate=True"
+  },
+  "Jwt": {
+    "Key": "TU_CLAVE_SECRETA_AQUI"
+  }
 }
 ```
 
----
-
-### 🔧 3. Aplicar migraciones
-
+3. Aplica las migraciones:
 ```bash
 dotnet ef database update
 ```
 
----
-
-### 🔧 4. Ejecutar proyecto
-
+4. Ejecuta el proyecto:
 ```bash
 dotnet run
 ```
 
----
-
-### 🔧 5. Acceder a Swagger
-
-```
-https://localhost:XXXX/swagger
-```
+5. Abre Swagger en: https://localhost:{PORT}/swagger
 
 ---
 
-## 🔐 Autenticación
+## Endpoints
 
-1. Registrar usuario
-2. Iniciar sesión → obtener token
-3. Usar token en Swagger:
+### Usuarios
 
-```
-Bearer TU_TOKEN
-```
+| Método | Ruta | Descripción | Auth |
+|--------|------|-------------|------|
+| POST | /api/users | Registrar usuario | ❌ |
+| POST | /api/users/login | Iniciar sesión | ❌ |
+| GET | /api/users | Obtener todos los usuarios | ❌ |
 
----
+### Tareas
 
-## 📌 Endpoints principales
-
-### 👤 Usuarios
-
-* `POST /api/user` → Registrar usuario
-* `GET /api/user` → Mostrar
-* `POST /api/user/login` → Login
-
----
-
-### 📋 Tareas (requiere autenticación)
-
-* `GET /api/task` → Obtener tareas
-* `POST /api/task` → Crear tarea
-* `PUT /api/task/{id}` → Actualizar tarea
-* `DELETE /api/task/{id}` → Eliminar tarea
+| Método | Ruta | Descripción | Auth |
+|--------|------|-------------|------|
+| POST | /api/tasks | Crear tarea | ✅ |
+| GET | /api/tasks | Obtener todas las tareas | ✅ |
+| PUT | /api/tasks/{id} | Actualizar tarea | ✅ |
+| DELETE | /api/tasks/{id} | Eliminar tarea | ✅ |
 
 ---
 
-## 🧪 Ejemplos
+## Autenticación
 
-### Registro
+La API usa JWT. Para acceder a endpoints protegidos:
 
-```json
-{
-  "email": "test@mail.com",
-  "password": "123456"
-}
-```
+1. Regístrate en `POST /api/users`
+2. Inicia sesión en `POST /api/users/login`
+3. Copia el token recibido
+4. En Swagger haz click en **Authorize** e ingresa: Bearer TU_TOKEN_AQUI
 
 ---
 
-### Login
+## Historial de cambios
 
-```json
-{
-  "email": "test@mail.com",
-  "password": "123456"
-}
-```
+### v1.1.0
+- Migración de lógica de negocio a capa de Services
+- Creación de interfaces `ITaskService` e `IUserService`
+- Clave JWT movida de código a `appsettings.json`
+- Eliminado `UseAuthorization()` duplicado en `Program.cs`
 
----
-
-### Crear tarea
-
-```json
-{
-  "title": "Aprender .NET",
-  "description": "Construir API",
-  "status": "Pendiente"
-}
-```
+### v1.0.0
+- Implementación inicial de CRUD de tareas
+- Autenticación con JWT
+- Hash de contraseñas con BCrypt
+- Documentación con Swagger
 
 ---
 
-## 🧠 Flujo de la aplicación
-
-1. Usuario se registra (password hasheado)
-2. Usuario inicia sesión → recibe JWT
-3. Token se usa para acceder a endpoints protegidos
-4. Las tareas se asocian al usuario autenticado
-
 ---
-
-## 🔒 Seguridad
-
-* Contraseñas almacenadas con hash (BCrypt)
-* Autenticación mediante JWT
-* Endpoints protegidos con `[Authorize]`
-* Validación de datos en backend
-
----
-
 ## 👨‍💻 Autor
 
 Proyecto desarrollado como práctica de backend con .NET enfocado en buenas prácticas y seguridad.
+---
 
